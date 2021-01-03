@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Login</title>
+	<link rel="shortcut icon" href="./Images/mazeicnw.png" type="image/png">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="./style.css">
+</head>
+
+<body style="background: url(./Images/Maze_bg.jpg) no-repeat top center fixed;background-size: cover ">
+	<!--https://www.youtube.com/watch?v=mUdo6w87rh4-->
+	<div class="container" id="container">
+		<div class="form-container sign-up-container">
+			<forme>
+				<h1>Create Account</h1>
+				<div class="simple-space">
+				</div>
+				<input type="text" id="input" placeholder="Username" />
+				<span id="set">
+					<input type="email" class="email" id="input" placeholder="Email" />
+					<button id="send">Send OTP</button>
+				</span>
+				<span id="set2">
+					<input type="number" min="0" class="otp" id="input" placeholder="Enter OTP" />
+					<button id="verify">Verify OTP</button>
+				</span>
+				<input type="password" id="input" placeholder="Password" />
+				<p id="danger"></p>
+				<button disabled>Sign Up</button>
+			</forme>
+		</div>
+		<div class="form-container sign-in-container">
+			<forme class="form">
+				<h1>Log In</h1>
+				<div class="simple-space"></div>
+				<div class="input-group">
+					<span><img src="https://img.icons8.com/cotton/32/000000/difficult-decision.png" alt="User"
+							title="Maze-Maker" /></span>
+					<input type="text" name="loginusr" id="loginusr" required>
+					<label for="loginusr">Username</label>
+				</div>
+				<div class="input-group">
+					<span><img src="./Images/maze_lock.jpg" alt="password" alt=""></span>
+					<input type="password" name="loginp" id="loginp" required>
+					<label for="loginp">Password</label>
+				</div>
+				<!-- <div class="simple-space"></div> -->
+				<button>Sign In</button>
+				<!-- <a href="Maze-solver.html">Sign In</a> -->
+				<div class="rem">
+					<input type="checkbox" name="remember">
+					<t>Remember me</t>
+				</div>
+			</forme>
+		</div>
+		<div class="overlay-container">
+			<div class="overlay">
+				<div class="overlay-panel overlay-left">
+					<h1>Welcome Back!</h1>
+					<div id="line"></div>
+					<p>To keep connected with us please login with your personal info</p>
+					<button class="ghost" id="signIn">Log In</button>
+				</div>
+				<div class="overlay-panel overlay-right">
+					<h1>Hello, Solvers!</h1>
+					<div id="line"></div>
+					<p>Enter your details to Login in and play</p>
+					<button class="ghost" id="signUp">Sign Up</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="./main.js"></script>
+	<!-- <script src="https://kit.fontawesome.com/a81368914c.js"></script> -->
+</body>
+
+</html>

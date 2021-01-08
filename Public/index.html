@@ -18,7 +18,7 @@
 				<h1>Create Account</h1>
 				<div class="simple-space">
 				</div>
-				<input type="text" id="input" placeholder="Username" />
+				<input type="text" id="input" class="User" placeholder="Username" />
 				<span id="set">
 					<input type="email" class="email" id="input" placeholder="Email" />
 					<button id="send">Send OTP</button>
@@ -27,9 +27,10 @@
 					<input type="number" min="0" class="otp" id="input" placeholder="Enter OTP" />
 					<button id="verify">Verify OTP</button>
 				</span>
-				<input type="password" id="input" placeholder="Password" />
+				<input type="password" id="input" class="password" placeholder="Password" />
 				<p id="danger"></p>
-				<button disabled>Sign Up</button>
+				<p id="success" style="display: none;"></p>
+				<button id="sign" disabled>Sign Up</button>
 			</forme>
 		</div>
 		<div class="form-container sign-in-container">

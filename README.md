@@ -1,9 +1,9 @@
-# This is a basic login with no proper authentication just to test out node mailer
+# Login Nodemailer 
+This is a basic login with no proper authentication just to test out node mailer
 
 ## Demo
 # This is a basic login with no proper authentication just to test out node mailer
 
-## Demo
 ### Login
 ![Screenshot 2021-01-09 at 6 36 44 PM](https://user-images.githubusercontent.com/55324916/104092396-acfacb80-52a9-11eb-80ff-ec6511539c7a.png)
 ### Sign Up

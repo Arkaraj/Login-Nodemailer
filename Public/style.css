@@ -96,7 +96,7 @@ button.ghost:hover{
        padding: 12px 60px;
 }
 
-forme {
+forme{
 	background: #f5f5ff;
 	display: flex;
 	align-items: center;
@@ -305,8 +305,11 @@ span{
     color: #2196F3;
     /* color: orange; */
   }
-p#danger{
+p#danger, p#problem{
 	color: red;
+}
+p#success{
+	color: #00d778;
 }
 #set,#set2{
 	width: 100%;

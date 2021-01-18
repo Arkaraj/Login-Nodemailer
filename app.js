@@ -4,6 +4,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const nodemailer = require("nodemailer");
 const mysql = require('mysql');
+const bcrypt = require('bcrypt');
 require('dotenv').config();
 
 const connection = mysql.createConnection({
@@ -22,6 +23,7 @@ connection.connect(err => {
 });
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
 
 // Values from 1000 to 9999
 let OTP = 0000;
@@ -116,30 +118,54 @@ app.post('/otp', (req, res) => {
     }
 });
 
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
 
-    connection.query(`SELECT * from Users where email = '${req.body.loginusr}' and password = '${req.body.loginp}' `, function (error, results, fields) {
-        if (error) throw error;
-        // no error
-        if (results.length == 0) {
-            // Send the OTP
-            return res.status(200).send('nope');
-        }
-        else
-            console.log('Logging in!!');
-        authenticated = true;
-        res.send('done');
-        //res.redirect('/home');
-    });
+    const { loginusr, loginp } = req.body;
+
+    try {
+        connection.query(`SELECT * from Users where email = '${loginusr}' `, async function (error, results, fields) {
+            if (error) throw error;
+            // no error
+            if (results.length == 0) {
+                return res.status(200).send('nope');
+            }
+            else {
+                let encrypt = results[0].password;
+                const validate = await bcrypt.compare(loginp, encrypt);
+                if (validate) {
+                    console.log('Logging in!!');
+                    authenticated = true;
+                    res.send('done');
+                } else {
+                    res.send('nope');
+                }
+            }
+
+
+            //res.redirect('/home');
+        });
+    } catch (err) {
+
+    }
 });
 
-app.post('/check', (req, res) => {
-    // do here insertion in Database
-    connection.query(`INSERT INTO Users(Username,password,email) values('${req.body.user}','${req.body.pass}','${req.body.email}')`, function (error, results, fields) {
-        if (error) throw error;
-        // no error
-        res.send('added');
-    });
+app.post('/check', async (req, res) => {
+
+    const { user, password, email } = req.body;
+
+    try {
+        let hash = await bcrypt.hash(password, 10);
+
+        // do here insertion in Database
+        connection.query(`INSERT INTO Users(Username,password,email) values('${user}','${hash}','${email}')`, function (error, results, fields) {
+            if (error) throw error;
+            // no error
+            res.send('added');
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+    }
+
 });
 
 

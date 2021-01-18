@@ -9,7 +9,7 @@ signUpButton.on('click', () => {
         type: 'get',
         success: (result) => {
             if (result == 'done') {
-                console.log('otp generated!');
+                //console.log('otp generated!');
             }
         }
     });
@@ -100,6 +100,7 @@ $('#getin').on('click', () => {
     let loginPass = $('#loginp').val();
 
     if (loginUser == '' || loginPass == '') {
+        $('#success').hide();
         $("#problem").show();
         $("#problem").html('Enter Email and Password');
     } else {
@@ -131,14 +132,16 @@ $('#sign').on('click', () => {
     let user = $('.User').val();
 
     if (password == '' || user == '') {
-        // Enter username and password
+        $('#danger').show();
+        $('#danger').html('Please enter Email and password...');
     } else {
+        $('#danger').hide();
         $('.User').attr('disabled', true);
         $('.password').attr('disabled', true);
         $.ajax({
             url: '/check',
             type: 'post',
-            data: `user=${user}&pass=${password}&email=${email}`,
+            data: `user=${user}&password=${password}&email=${email}`,
             success: (result) => {
                 if (result == 'added') {
                     $('#success').show();

@@ -7,6 +7,8 @@
 	<title>Login</title>
 	<link rel="shortcut icon" href="./Images/mazeicnw.png" type="image/png">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+		integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
 	<link rel="stylesheet" href="./style.css">
 </head>
 
@@ -16,6 +18,12 @@
 		<div class="form-container sign-up-container">
 			<forme>
 				<h1>Create Account</h1>
+				<div class="social-container">
+					<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+					<a href="#" class="social"><i class="fab fa-google"></i></a>
+					<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+				</div>
+				<span>or use your email for registration</span>
 				<div class="simple-space">
 				</div>
 				<input type="text" id="input" class="User" placeholder="Username" />
@@ -36,6 +44,12 @@
 		<div class="form-container sign-in-container">
 			<forme class="form">
 				<h1>Log In</h1>
+				<div class="social-container">
+					<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+					<a href="#" class="social"><i class="fab fa-google"></i></a>
+					<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+				</div>
+				<span>or use your account</span>
 				<div class="simple-space"></div>
 				<div class="input-group">
 					<span><img src="https://img.icons8.com/cotton/32/000000/difficult-decision.png" alt="User"
@@ -48,6 +62,7 @@
 					<input type="password" id="loginp" required>
 					<label for="loginp">Password</label>
 				</div>
+				<a href="#forp">Forgot your password?</a>
 				<!-- <div class="simple-space"></div> -->
 				<button id="getin">Sign In</button>
 				<!-- <a href="Maze-solver.html">Sign In</a> -->
@@ -74,6 +89,17 @@
 				</div>
 			</div>
 		</div>
+	</div>
+	<div id="forp">
+		<forme class="form">
+			<a href="#" class="close">&times;</a>
+			<h2>Reset Password</h2>
+			<div class="input-group">
+				<input type="email" name="email" id="email" required>
+				<label id="forpem" for="email">Email</label>
+			</div>
+			<button id="forpass">Submit</button>
+		</forme>
 	</div>
 	<script src="./main.js"></script>
 	<!-- <script src="https://kit.fontawesome.com/a81368914c.js"></script> -->

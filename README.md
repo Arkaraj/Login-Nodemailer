@@ -45,6 +45,6 @@ node app.js
 - [x] Nodemailer
 - [x] Mysql DB
 - [x] Bcrypt
-- [ ] Forgot Password
+- [x] Forgot Password
 - [ ] Oauth
 - [ ] Passport.Js

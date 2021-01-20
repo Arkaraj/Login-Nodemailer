@@ -38,7 +38,7 @@ let authenticated = false;
 app.use(express.static(path.join(__dirname, 'Public')));
 
 // For sending mail
-async function sendMail(email) {
+async function sendMail(email, subjectLine, plainTextLine, htmlBody) {
     // Generate test SMTP service account from ethereal.email    
 
     // create reusable transporter object using the default SMTP transport
@@ -58,9 +58,9 @@ async function sendMail(email) {
     return await transporter.sendMail({
         from: `${process.env.USR}`, // sender address
         to: `${email}`, // list of receivers
-        subject: "Node OTP", // Subject line
-        text: `Your OTP is ${OTP}`, // plain text body
-        html: `<b>Your OTP is ${OTP}</b>`, // html body 
+        subject: `${subjectLine}`, // Subject line 
+        text: `${plainTextLine}`, // plain text body 
+        html: `${htmlBody}`, // html body 
     });
     /* Nodemailer docs:
     console.log("Message sent: %s", info.messageId);
@@ -94,7 +94,7 @@ app.post('/', (req, res) => {
         if (results.length == 0) {
             // Send the OTP
             try {
-                await sendMail(email);
+                await sendMail(email, 'Node OTP', `Your OTP is ${OTP}`, `<b>Your OTP is ${OTP}</b>`);
                 return res.send('done')
             } catch (err) {
                 return res.send('invalid_email')
@@ -149,6 +149,28 @@ app.post('/login', async (req, res) => {
     }
 });
 
+app.post('/forgot', (req, res) => {
+    const { email } = req.body;
+
+    connection.query(`SELECT email,password from Users where email='${email}'`, async (err, results, fields) => {
+        if (err) throw err;
+
+        if (results.length == 0) {
+            return res.send('invalid');
+        }
+
+        // Sends the Encrypted passwords
+        let pass = results[0].password;
+        try {
+            await sendMail(email, 'Your Password', `Your old Encrypted password is ${pass}`, `<b>Your old Encrypted password is ${pass}</b>`);
+            return res.send('done');
+        } catch (err) {
+            return res.send('invalid');
+        }
+
+    });
+});
+
 app.post('/check', async (req, res) => {
 
     const { user, password, email } = req.body;
@@ -164,11 +186,36 @@ app.post('/check', async (req, res) => {
         });
     } catch (err) {
         console.log('Error: ' + err);
+        res.send('nope');
     }
 
 });
 
+app.patch('/update', async (req, res) => {
+    const { email, password } = req.body;
 
-const port = process.env.PORT || 5000;
+    if (password.length < 3) {
+        return res.send('nope');
+    }
+
+    try {
+        let hash = await bcrypt.hash(password, 10);
+
+        // do here insertion in Database
+        connection.query(`UPDATE Users SET password='${hash}' where email = '${email}'`, function (error, results, fields) {
+            if (error) throw error;
+            // no error
+            res.send('done');
+        });
+    } catch (err) {
+        console.log('Error: ' + err);
+        res.send('nope');
+    }
+
+
+});
+
+
+const port = process.env.PORT || 8000;
 
 app.listen(port, () => { console.log(`Listening at port ${port} 🚀`) });

@@ -136,6 +136,7 @@ forme{
 	max-width: 100%;
 	min-height: 500px;
 	z-index: 1;
+	transition: all .2s;
 }
 
 .form-container {
@@ -336,10 +337,10 @@ span{
     color: #2196F3;
     /* color: orange; */
   }
-p#danger, p#problem{
+p#danger, p#problem, p#warning{
 	color: red;
 }
-p#success{
+p#success, p#success2{
 	color: #00d778;
 }
 #set,#set2{
@@ -384,6 +385,10 @@ p#success{
     text-decoration: none;
 }
 
-#forpem {
+#mail {
 	left: 40%;
+}
+
+#uppass, .newPass {
+	display: none;
 }

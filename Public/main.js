@@ -154,3 +154,72 @@ $('#sign').on('click', () => {
     }
 });
 
+$('#forpass').on('click', () => {
+    let email = $('#forpem').val();
+
+    if (email == '') {
+        $('#warning').show();
+        $('#warning').html('Please enter Email...');
+    } else {
+        $('#warning').hide();
+        $('#forpem').attr('disabled', true);
+        $('#forpass').attr('disabled', true);
+        $.ajax({
+            url: '/forgot',
+            type: 'post',
+            data: `email=${email}`,
+            success: (result) => {
+                if (result == 'done') {
+                    $('#success2').show();
+                    $('#success2').html('Old encrypted Pasword is sent to your Email, Give us new Password');
+                    // $('#forpass').html('Now Login!!');
+                    $('#forpass').hide();
+                    $('.newPass').show();
+                    $('#uppass').show();
+                } else {
+                    $('#warning').show();
+                    $('#warning').html('Please enter valid Email');
+                    $('#forpem').attr('disabled', false);
+                    $('#forpass').attr('disabled', false);
+                }
+            }
+        });
+
+    }
+});
+
+$('#uppass').on('click', () => {
+    let pass = $('#updatePassword').val();
+    let email = $('#forpem').val();
+
+    if (pass == '') {
+        $('#success2').hide();
+        $('#warning').show();
+        $('#warning').html('Please enter Password...');
+    } else {
+        $('#warning').hide();
+        $('updatePassword').attr('disabled', true);
+        $('#uppass').attr('disabled', true);
+
+        $.ajax({
+            url: '/update',
+            type: 'patch',
+            data: `email=${email}&password=${pass}`,
+            success: (result) => {
+                if (result == 'done') {
+                    $('#success2').show();
+                    $('#success2').html('Done Updated password 😀, Try Loggin in now');
+                    $('#uppass').html('Now Login!!');
+                    $('#uppass').attr('disabled', true);
+
+                } else { // This case can kindda never happen
+                    $('#warning').show();
+                    $('#warning').html('Password must contain atleast 3 letters');
+                    $('#updatePassword').attr('disabled', false);
+                    $('#uppass').attr('disabled', false);
+                }
+            }
+        });
+    }
+
+});

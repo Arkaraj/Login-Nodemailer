@@ -95,10 +95,17 @@
 			<a href="#" class="close">&times;</a>
 			<h2>Reset Password</h2>
 			<div class="input-group">
-				<input type="email" name="email" id="email" required>
-				<label id="forpem" for="email">Email</label>
+				<input type="email" name="email" id="forpem">
+				<label id="mail">Email</label>
+				<div class="newPass">
+					<input type="password" id="updatePassword">
+					<label id="mail">New Password</label>
+				</div>
 			</div>
 			<button id="forpass">Submit</button>
+			<button id="uppass">Update</button>
+			<p id="warning"></p>
+			<p id="success2" style="display: none;"></p>
 		</forme>
 	</div>
 	<script src="./main.js"></script>

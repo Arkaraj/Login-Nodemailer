@@ -112,9 +112,22 @@ $('#getin').on('click', () => {
             url: '/login',
             type: 'post',
             data: `loginusr=${loginUser}&loginp=${loginPass}`,
-            success: (result) => {
-                if (result == 'done') {
-                    window.location = '/home';
+            success: async (result) => {
+                // result is already parsed
+                if (result.auth) {
+                    // window.location = '/home';
+                    // Storing the JWT
+                    localStorage.setItem("token", result.token);
+                    $.ajax({
+                        url: "/home",
+                        headers: {
+                            "x-access-token": localStorage.getItem("token")
+                        },
+                        success: (result) => {
+                            console.log(result);
+                        }
+                    });
+
                 } else {
                     $("#problem").show();
                     $("#problem").html('Sorry wrong Email or password...');

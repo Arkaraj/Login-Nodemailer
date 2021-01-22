@@ -46,5 +46,5 @@ node app.js
 - [x] Mysql DB
 - [x] Bcrypt
 - [x] Forgot Password
-- [ ] Oauth
-- [ ] Passport.Js
+- [ ] Oauth2
+- [ ] Passport.Js (JWT or Local)

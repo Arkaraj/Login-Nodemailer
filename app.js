@@ -7,6 +7,12 @@ const mysql = require('mysql');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 
+//secret_token: require('crypto').randomBytes(64).toString('hex')
+
+const jwt = require('jsonwebtoken');
+
+// Authentication required!!!
+
 const connection = mysql.createConnection({
     host: `${process.env.HOST}`,
     user: `${process.env.USER_DB}`,
@@ -32,8 +38,6 @@ function generateOTP() {
     OTP = Math.floor(Math.random() * 9000) + 1000;
     console.log(OTP);
 }
-
-let authenticated = false;
 
 app.use(express.static(path.join(__dirname, 'Public')));
 
@@ -62,7 +66,8 @@ async function sendMail(email, subjectLine, plainTextLine, htmlBody) {
         text: `${plainTextLine}`, // plain text body 
         html: `${htmlBody}`, // html body 
     });
-    /* Nodemailer docs:
+    /* 
+    Nodemailer docs:
     console.log("Message sent: %s", info.messageId);
     // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
 
@@ -75,15 +80,6 @@ async function sendMail(email, subjectLine, plainTextLine, htmlBody) {
 app.get('/otp', (req, res) => {
     generateOTP();
     res.send('done');
-});
-
-app.get('/home', (req, res) => {
-    //res.sendFile('./Public/login.html', { root: __dirname });
-    if (authenticated) {
-        res.send('<h1>This is the Home page</h1>');
-    } else {
-        res.redirect('/');
-    }
 });
 
 app.post('/', (req, res) => {
@@ -133,11 +129,17 @@ app.post('/login', async (req, res) => {
                 let encrypt = results[0].password;
                 const validate = await bcrypt.compare(loginp, encrypt);
                 if (validate) {
-                    console.log('Logging in!!');
-                    authenticated = true;
-                    res.send('done');
+
+                    const id = results[0].id;
+                    const token = jwt.sign({ id }, `${process.env.SECRET}`, {
+                        expiresIn: 300, // 5 minutes
+                    });
+
+                    console.log('User Authenticated!!');
+                    // Pass to the frontend
+                    res.json({ auth: true, token: token, result: results });
                 } else {
-                    res.send('nope');
+                    res.json({ auth: false });
                 }
             }
 
@@ -147,6 +149,33 @@ app.post('/login', async (req, res) => {
     } catch (err) {
 
     }
+});
+
+// Middleware
+const verifyJWT = (req, res, next) => {
+    const token = req.headers["x-access-token"];
+
+    if (!token) {
+        //res.send('Requires a token');
+        return res.sendStatus(401); // Unauthorized
+    } else {
+        jwt.verify(token, `${process.env.SECRET}`, (err, decoded) => {
+            if (err) res.json({ auth: false });
+            else {
+                // console.log(decoded);
+                req.userId = decoded.id;
+                next();
+            }
+        })
+    }
+}
+
+app.get('/home', verifyJWT, (req, res) => {
+    // res.send("<h1>You are Autenticated!</h1>")
+
+    // Authorized!!
+
+    res.sendFile('./Public/home.html', { root: __dirname });
 });
 
 app.post('/forgot', (req, res) => {

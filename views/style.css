@@ -96,7 +96,7 @@ button.ghost:hover{
        padding: 12px 60px;
 }
 
-forme{
+form, forme{
 	background: #f5f5ff;
 	display: flex;
 	align-items: center;

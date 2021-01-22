@@ -42,7 +42,7 @@
 			</forme>
 		</div>
 		<div class="form-container sign-in-container">
-			<forme class="form">
+			<form action="/login" method="POST" class="form">
 				<h1>Log In</h1>
 				<div class="social-container">
 					<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
@@ -54,12 +54,12 @@
 				<div class="input-group">
 					<span><img src="https://img.icons8.com/cotton/32/000000/difficult-decision.png" alt="User"
 							title="Maze-Maker" /></span>
-					<input type="email" id="loginusr" required>
+					<input type="email" name="loginusr" id="loginusr" required>
 					<label for="loginusr">Email</label>
 				</div>
 				<div class="input-group">
 					<span><img src="./Images/maze_lock.jpg" alt="password" alt=""></span>
-					<input type="password" id="loginp" required>
+					<input type="password" name="loginp" id="loginp" required>
 					<label for="loginp">Password</label>
 				</div>
 				<a href="#forp">Forgot your password?</a>
@@ -70,8 +70,8 @@
 					<input type="checkbox" name="remember">
 					<t>Remember me</t>
 				</div>
-				<p id="problem" style="display: none;"></p>
-			</forme>
+				<p id="problem" style="display: none;"><%= status.msg %> </p>
+			</form>
 		</div>
 		<div class="overlay-container">
 			<div class="overlay">

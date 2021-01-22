@@ -1,23 +1,25 @@
 const path = require('path');
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser');
 const nodemailer = require("nodemailer");
 const mysql = require('mysql');
 const bcrypt = require('bcrypt');
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 //secret_token: require('crypto').randomBytes(64).toString('hex')
 
 const jwt = require('jsonwebtoken');
+let authUser = {};
+let warning = "";
 
 // Authentication required!!!
 
 const connection = mysql.createConnection({
-    host: `${process.env.HOST}`,
-    user: `${process.env.USER_DB}`,
-    password: `${process.env.PASSWORD}`,
-    database: `${process.env.DB_NAME}`
+    host: process.env.HOST,
+    user: process.env.USER_DB,
+    password: process.env.PASSWORD,
+    database: process.env.DB_NAME
 });
 
 connection.connect(err => {
@@ -28,8 +30,9 @@ connection.connect(err => {
         console.log('connected as id ' + connection.threadId);
 });
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(cookieParser());
 
 // Values from 1000 to 9999
 let OTP = 0000;
@@ -39,7 +42,8 @@ function generateOTP() {
     console.log(OTP);
 }
 
-app.use(express.static(path.join(__dirname, 'Public')));
+app.use(express.static(path.join(__dirname, 'views')));
+app.set('view engine', 'ejs');
 
 // For sending mail
 async function sendMail(email, subjectLine, plainTextLine, htmlBody) {
@@ -76,6 +80,13 @@ async function sendMail(email, subjectLine, plainTextLine, htmlBody) {
     // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
     */
 }
+
+app.get('/', (req, res) => {
+    const status = {
+        msg: ""
+    }
+    res.render('index', { status: status });
+})
 
 app.get('/otp', (req, res) => {
     generateOTP();
@@ -123,7 +134,8 @@ app.post('/login', async (req, res) => {
             if (error) throw error;
             // no error
             if (results.length == 0) {
-                return res.status(200).send('nope');
+                warning = "Incorrect Email or Password";
+                return res.status(200).redirect('/');
             }
             else {
                 let encrypt = results[0].password;
@@ -132,14 +144,26 @@ app.post('/login', async (req, res) => {
 
                     const id = results[0].id;
                     const token = jwt.sign({ id }, `${process.env.SECRET}`, {
-                        expiresIn: 300, // 5 minutes
+                        expiresIn: 300 // 300 -> 5 minutes
                     });
+
+                    const cookieOptions = {
+                        expires: new Date(Date.now() + process.env.JWT_COOKIE_TIME * 24 * 60 * 60 * 1000),
+                        httpOnly: true
+                    };
+
+                    res.cookie('token', token, cookieOptions);
 
                     console.log('User Authenticated!!');
                     // Pass to the frontend
-                    res.json({ auth: true, token: token, result: results });
+                    authUser = { auth: true, token: token, result: results };
+                    res.status(200).redirect('/home');
+                    //res.json({ auth: true, token: token, result: results });
                 } else {
+                    warning = "Incorrect Email or Password";
                     res.json({ auth: false });
+
+
                 }
             }
 
@@ -153,29 +177,36 @@ app.post('/login', async (req, res) => {
 
 // Middleware
 const verifyJWT = (req, res, next) => {
-    const token = req.headers["x-access-token"];
-
-    if (!token) {
-        //res.send('Requires a token');
-        return res.sendStatus(401); // Unauthorized
-    } else {
-        jwt.verify(token, `${process.env.SECRET}`, (err, decoded) => {
-            if (err) res.json({ auth: false });
-            else {
-                // console.log(decoded);
-                req.userId = decoded.id;
-                next();
-            }
-        })
+    const ftoken = req.headers["cookie"];
+    try {
+        const token = ftoken.substring(6, ftoken.length)
+        if (!token) {
+            //res.send('Requires a token');
+            return res.sendStatus(401) // Unauthorized
+        } else {
+            jwt.verify(token, `${process.env.SECRET}`, (err, decoded) => {
+                if (err) res.json({ auth: false });
+                else {
+                    // console.log(decoded);
+                    req.userId = decoded.id;
+                    next();
+                }
+            })
+        }
+    } catch (err) {
+        return res.sendStatus(401)
     }
 }
 
+// app.use('/home', verifyJWT, express.static(path.join(__dirname, 'Public/home.html'))); //auth route
+
 app.get('/home', verifyJWT, (req, res) => {
-    // res.send("<h1>You are Autenticated!</h1>")
-
     // Authorized!!
-
-    res.sendFile('./Public/home.html', { root: __dirname });
+    const user = {
+        id: req.userId,
+        name: authUser.result[0].Username
+    }
+    res.render('home', { User: user });
 });
 
 app.post('/forgot', (req, res) => {
@@ -245,6 +276,6 @@ app.patch('/update', async (req, res) => {
 });
 
 
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 4000;
 
 app.listen(port, () => { console.log(`Listening at port ${port} 🚀`) });

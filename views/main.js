@@ -95,7 +95,7 @@ function verifyOTP() {
     }
 }
 
-$('#getin').on('click', () => {
+/*$('#getin').on('click', () => {
     let loginUser = $('#loginusr').val();
     let loginPass = $('#loginp').val();
 
@@ -124,7 +124,7 @@ $('#getin').on('click', () => {
                             "x-access-token": localStorage.getItem("token")
                         },
                         success: (result) => {
-                            console.log(result);
+                            // Redirect to home
                         }
                     });
 
@@ -137,7 +137,7 @@ $('#getin').on('click', () => {
             }
         });
     }
-});
+});*/
 
 $('#sign').on('click', () => {
     let email = $('.email').val();

@@ -7,12 +7,18 @@ const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
-const auth = require('./auth');
+const { router, name } = require('./auth');
+
+let useName;
 
 //secret_token: require('crypto').randomBytes(64).toString('hex')
 
 const jwt = require('jsonwebtoken');
-let authUser = {};
+let authUser = {
+    auth: false,
+    token: '',
+    name: ''
+};
 let warning = "";
 let disp = "none";
 
@@ -36,7 +42,7 @@ connection.connect(err => {
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
-app.use('/auth', auth);
+app.use('/auth', router);
 
 // Values from 1000 to 9999
 let OTP = 0000;
@@ -86,12 +92,6 @@ async function sendMail(email, subjectLine, plainTextLine, htmlBody) {
 }
 
 const checkAuth = (req, res, next) => {
-    // if ((Object.keys(authUser).length) / 3 >= 1) {
-    //     // console.log(authUser)
-    //     return res.status(200).redirect('/home');
-    // } else {
-    //     next();
-    // }
 
     const token = req.cookies.token;
     try {
@@ -100,7 +100,11 @@ const checkAuth = (req, res, next) => {
             //res.send('Requires a token');
             next();
         } else {
-            return res.status(200).redirect('/home');
+            if (authUser.token != req.userId) {
+                return res.status(200).redirect('/home');
+            }
+
+            next();
         }
     } catch (err) {
         next();
@@ -185,7 +189,8 @@ app.post('/login', async (req, res) => {
 
                     console.log('User Authenticated!!');
                     // Pass to the frontend
-                    authUser = { auth: true, token: token, result: results };
+                    authUser = { auth: true, token: token, name: results[0].Username };
+                    req.userName = results[0].Username;
                     res.status(200).redirect('/home');
                     //res.json({ auth: true, token: token, result: results });
                 } else {
@@ -225,7 +230,7 @@ const verifyJWT = (req, res, next) => {
             return res.sendStatus(401) // Unauthorized
         } else {
             jwt.verify(token, `${process.env.SECRET}`, (err, decoded) => {
-                if (err) res.json({ auth: false });
+                if (err) res.sendStatus(401).redirect('/');
                 else {
                     // console.log(decoded);
                     req.userId = decoded.id;
@@ -239,14 +244,27 @@ const verifyJWT = (req, res, next) => {
     }
 }
 
+function checkUser(req, res, next) {
+
+    if (req.userId == undefined) {
+        // useName = name;
+        useName = 'OAuth User';
+        next();
+    } else {
+        useName = authUser.name
+        next();
+    }
+}
+
 // app.use('/home', verifyJWT, express.static(path.join(__dirname, 'Public/home.html'))); //auth route
 
-app.get('/home', verifyJWT, (req, res) => {
+app.get('/home', verifyJWT, checkUser, (req, res) => {
     // Authorized!!
     const user = {
         id: req.userId,
-        name: authUser.result[0].Username
+        name: useName
     }
+
     res.render('home', { User: user });
 });
 

@@ -48,6 +48,6 @@ node app.js
 - [x] Forgot Password
 - [x] Cookie-Parser
 - [x] JWT
-- [ ] Oauth2
+- [x] Oauth2
 - [ ] Passport.Js
 - [ ] Firebase

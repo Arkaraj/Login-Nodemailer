@@ -7,11 +7,14 @@ const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
+const auth = require('./auth');
+
 //secret_token: require('crypto').randomBytes(64).toString('hex')
 
 const jwt = require('jsonwebtoken');
 let authUser = {};
 let warning = "";
+let disp = "none";
 
 // Authentication required!!!
 
@@ -33,6 +36,7 @@ connection.connect(err => {
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
+app.use('/auth', auth);
 
 // Values from 1000 to 9999
 let OTP = 0000;
@@ -81,9 +85,33 @@ async function sendMail(email, subjectLine, plainTextLine, htmlBody) {
     */
 }
 
-app.get('/', (req, res) => {
+const checkAuth = (req, res, next) => {
+    // if ((Object.keys(authUser).length) / 3 >= 1) {
+    //     // console.log(authUser)
+    //     return res.status(200).redirect('/home');
+    // } else {
+    //     next();
+    // }
+
+    const token = req.cookies.token;
+    try {
+        // const token = ftoken.substring(6, ftoken.length)
+        if (!token) {
+            //res.send('Requires a token');
+            next();
+        } else {
+            return res.status(200).redirect('/home');
+        }
+    } catch (err) {
+        next();
+    }
+
+}
+
+app.get('/', checkAuth, (req, res) => {
     const status = {
-        msg: ""
+        msg: warning,
+        display: disp
     }
     res.render('index', { status: status });
 })
@@ -135,6 +163,7 @@ app.post('/login', async (req, res) => {
             // no error
             if (results.length == 0) {
                 warning = "Incorrect Email or Password";
+                disp = "flex";
                 return res.status(200).redirect('/');
             }
             else {
@@ -148,7 +177,7 @@ app.post('/login', async (req, res) => {
                     });
 
                     const cookieOptions = {
-                        expires: new Date(Date.now() + process.env.JWT_COOKIE_TIME * 24 * 60 * 60 * 1000),
+                        expires: new Date(Date.now() + process.env.JWT_COOKIE_TIME * 24 * 60 * 60 * 1000), // expires in jwt_cookie_time day
                         httpOnly: true
                     };
 
@@ -161,9 +190,8 @@ app.post('/login', async (req, res) => {
                     //res.json({ auth: true, token: token, result: results });
                 } else {
                     warning = "Incorrect Email or Password";
-                    res.json({ auth: false });
-
-
+                    disp = "flex";
+                    return res.status(200).redirect('/');
                 }
             }
 
@@ -175,13 +203,25 @@ app.post('/login', async (req, res) => {
     }
 });
 
+// Authorization
+// Bearer <access_token>
+
 // Middleware
 const verifyJWT = (req, res, next) => {
-    const ftoken = req.headers["cookie"];
+    // Using cookie
+    // const ftoken = req.headers["cookie"];
+    const token = req.cookies.token;
+    // Using JWT
+    /* 
+    const fullToken = req.headers['x-access-token'];
+    const token = fullToken.spilt(' ')[1]; // Removes the bearer
+    */
     try {
-        const token = ftoken.substring(6, ftoken.length)
+        // const token = ftoken.substring(6, ftoken.length)
         if (!token) {
             //res.send('Requires a token');
+            authUser = {};
+            // console.log(authUser);
             return res.sendStatus(401) // Unauthorized
         } else {
             jwt.verify(token, `${process.env.SECRET}`, (err, decoded) => {
@@ -194,6 +234,7 @@ const verifyJWT = (req, res, next) => {
             })
         }
     } catch (err) {
+        // console.log(authUser);
         return res.sendStatus(401)
     }
 }
@@ -273,6 +314,11 @@ app.patch('/update', async (req, res) => {
     }
 
 
+});
+
+app.post('/logout', (req, res) => {
+    res.clearCookie('token');
+    return res.status(200).redirect('/');
 });
 
 

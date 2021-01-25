@@ -19,9 +19,9 @@
 			<forme>
 				<h1>Create Account</h1>
 				<div class="social-container">
-					<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
-					<a href="#" class="social"><i class="fab fa-google"></i></a>
-					<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+					<a href="/auth/facebook" class="social"><i class="fab fa-facebook-f"></i></a>
+					<a href="/auth/google" class="social"><i class="fab fa-google"></i></a>
+					<a href="/auth/github" class="social"><i class="fab fa-github"></i></a>
 				</div>
 				<span>or use your email for registration</span>
 				<div class="simple-space">
@@ -45,9 +45,9 @@
 			<form action="/login" method="POST" class="form">
 				<h1>Log In</h1>
 				<div class="social-container">
-					<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
-					<a href="#" class="social"><i class="fab fa-google"></i></a>
-					<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+					<a href="/auth/facebook" class="social"><i class="fab fa-facebook-f"></i></a>
+					<a href="/auth/google" class="social"><i class="fab fa-google"></i></a>
+					<a href="/auth/github" class="social"><i class="fab fa-github"></i></a>
 				</div>
 				<span>or use your account</span>
 				<div class="simple-space"></div>
@@ -70,7 +70,7 @@
 					<input type="checkbox" name="remember">
 					<t>Remember me</t>
 				</div>
-				<p id="problem" style="display: none;"><%= status.msg %> </p>
+				<p id="problem" style="display: <%= status.display %>"><%= status.msg %> </p>
 			</form>
 		</div>
 		<div class="overlay-container">

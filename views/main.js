@@ -121,6 +121,7 @@ function verifyOTP() {
                     $.ajax({
                         url: "/home",
                         headers: {
+                            // Bearer <access_token> ==> "Bearer " + localStorage.getItem("token")
                             "x-access-token": localStorage.getItem("token")
                         },
                         success: (result) => {

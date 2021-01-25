@@ -63,6 +63,39 @@ router.get('/oauth_githcb', async (req, res) => {
 
 });
 
+router.get('/google', (req, res) => {
+    res.redirect(
+        `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=http://localhost:4000/auth/oauth_googlecb&response_type=code&access_type=offline&scope=https://www.googleapis.com/auth/userinfo.profile`,
+    );
+});
+
+router.get('/oauth_googlecb', (req, res) => {
+    const { query: { code } } = req;
+    console.log(code)
+
+    const body = {
+        client_id: process.env.GOOGLE_CLIENT_ID + '&',
+        client_secret: process.env.GOOGLE_SECRET_ID + '&',
+        code: code + '&',
+        redirect_uri: 'http://localhost:4000/home/&',
+        grant_type: 'authorization_code'
+    };
+    const opts = { headers: { accept: 'application/json' } };
+
+    axios.post('https://oauth2.googleapis.com/token', body, opts).then(
+        result => {
+            console.log(result)
+            res.json({ msg: "ddone" });
+        }
+    ).catch((err) => res.status(500).json({ err: err.message }));
+
+    // res.json({ msg: "done" })
+});
+
+
+router.get('/facebook', (req, res) => {
+
+});
 
 module.exports = {
     router,

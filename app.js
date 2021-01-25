@@ -100,7 +100,7 @@ const checkAuth = (req, res, next) => {
             //res.send('Requires a token');
             next();
         } else {
-            if (authUser.token != req.userId) {
+            if (token != req.userId) {
                 return res.status(200).redirect('/home');
             }
 
